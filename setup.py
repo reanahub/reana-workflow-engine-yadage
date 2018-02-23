@@ -68,10 +68,10 @@ install_requires = [
     'SQLAlchemy-Utils>=0.32.18',
     'pyzmq==16.0.2',
     'requests==2.11.1',
-    'yadage-schemas==0.7.4',
-    'adage==0.8.2',
-    'packtivity==0.8.8',
-    'yadage==0.12.13',
+    'yadage-schemas==0.7.16',
+    'adage==0.8.3',
+    'packtivity==0.10.0',
+    'yadage==0.13.5',
 ]
 
 packages = find_packages()
