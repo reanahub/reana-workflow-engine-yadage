@@ -26,7 +26,8 @@ import os
 import pipes
 
 from packtivity.asyncbackends import PacktivityProxyBase
-from packtivity.syncbackends import build_job, packconfig, publish
+from packtivity.syncbackends import (build_job, contextualize_parameters,
+                                     packconfig, publish)
 
 import submit
 
@@ -88,6 +89,8 @@ class ExternalBackend(object):
         return None
 
     def submit(self, spec, parameters, state, metadata):
+        parameters = contextualize_parameters(parameters,
+                                              state)
         job = build_job(spec['process'], parameters, state, self.config)
 
         if 'command' in job:
@@ -118,6 +121,8 @@ class ExternalBackend(object):
         )
 
     def result(self, resultproxy):
+        resultproxy.pars = contextualize_parameters(resultproxy.pars,
+                                                    resultproxy.state)
         return publish(
             resultproxy.spec['publisher'],
             resultproxy.pars, resultproxy.state, self.config
