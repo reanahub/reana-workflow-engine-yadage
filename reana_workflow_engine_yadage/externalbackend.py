@@ -112,7 +112,7 @@ class ExternalBackend(object):
         log.info('submitting!')
 
         job_id = submit.submit(
-            os.getenv('REANA_WORKFLOW_ENGINE_YADAGE_EXPERIMENT', 'default'),
+            os.getenv('REANA_WORKFLOW_ENGINE_EXPERIMENT', 'default'),
             image, wrapped_cmd)
 
         log.info('submitted job: %s', job_id)
