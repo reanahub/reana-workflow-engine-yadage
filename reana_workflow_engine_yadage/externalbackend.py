@@ -121,6 +121,7 @@ class ExternalBackend(object):
             workflow_uuid,
             os.getenv('REANA_WORKFLOW_ENGINE_YADAGE_EXPERIMENT', 'default'),
             image,
+            os.getenv('REANA_USERNAME', ''),
             wrapped_cmd,
             prettified_cmd,
             os.getenv('workflow_workspace', 'default'),
