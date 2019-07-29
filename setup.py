@@ -42,7 +42,6 @@ setup_requires = [
 
 install_requires = [
     'adage==0.8.5',
-    'celery>=4.1.0,<4.3',
     'click>=7',
     'enum34>=1.1.6',
     'packtivity==0.10.0',
