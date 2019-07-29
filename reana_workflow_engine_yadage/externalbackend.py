@@ -15,8 +15,8 @@ import pipes
 
 from celery import current_app
 from packtivity.asyncbackends import PacktivityProxyBase
-from packtivity.syncbackends import (build_job, contextualize_parameters,
-                                     packconfig, publish)
+from packtivity.syncbackends import (build_job, finalize_inputs, packconfig,
+                                     publish)
 from reana_commons.api_client import JobControllerAPIClient as rjc_api_client
 
 from .celeryapp import app
@@ -95,8 +95,7 @@ class ExternalBackend(object):
 
     def submit(self, spec, parameters, state, metadata):
         """Submit a yadage packtivity to RJC."""
-        parameters = contextualize_parameters(parameters,
-                                              state)
+        parameters = finalize_inputs(parameters, state)
         job = build_job(spec['process'], parameters, state, self.config)
 
         if 'command' in job:
@@ -157,8 +156,7 @@ class ExternalBackend(object):
 
     def result(self, resultproxy):
         """Retrieve the result of a pactivity run by RJC."""
-        resultproxy.pars = contextualize_parameters(resultproxy.pars,
-                                                    resultproxy.state)
+        resultproxy.pars = finalize_inputs(resultproxy.pars, resultproxy.state)
         return publish(
             resultproxy.spec['publisher'],
             resultproxy.pars, resultproxy.state, self.config
