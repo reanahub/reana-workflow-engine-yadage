@@ -47,16 +47,12 @@ install_requires = [
     'jq==0.1.6',
     'networkx==1.11',
     'packtivity==0.14.21',
-    'pyOpenSSL==17.5.0',  # FIXME remove once yadage-schemas solves deps.
     'reana-commons>=0.6.0.dev20190812,<0.7.0',
     'requests==2.20.0',
-    'rfc3987==1.3.7',  # FIXME remove once yadage-schemas solves deps.
-    'strict-rfc3339==0.7',  # FIXME remove once yadage-schemas solves deps.
     'SQLAlchemy-Utils>=0.32.18',
     'SQLAlchemy>=1.1.14',
-    'yadage-schemas==0.10.6',
     'yadage==0.20.0',
-    'webcolors==1.7',  # FIXME remove once yadage-schemas solves deps.
+    'yadage-schemas==0.10.6',
 ]
 
 packages = find_packages()
