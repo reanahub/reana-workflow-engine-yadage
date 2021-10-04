@@ -7,7 +7,6 @@
 # under the terms of the MIT License; see LICENSE file for more details.
 """REANA-Workflow-Engine-yadage workflow state tracker."""
 
-import ast
 import datetime
 import json
 import logging
@@ -145,6 +144,9 @@ class REANATracker(object):
     def finalize(self, adageobj):
         """Finalize the progress tracking."""
         self.track(adageobj)
-        log.info("Finalizing the progress tracking for: {}".format(adageobj))
+        log.info(f"Finalizing the progress tracking for: {adageobj}")
+        log.info(f"Publish finish status for workflow {self.workflow_id}")
+        self.reana_status_publisher.publish_workflow_status(self.workflow_id, 2)
         if self.reana_status_publisher:
+            log.info(f"Closing status publisher")
             self.reana_status_publisher.close()

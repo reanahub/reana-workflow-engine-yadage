@@ -74,8 +74,6 @@ def run_yadage_workflow_engine_adapter(
 
         ys.adage_argument(additional_trackers=[REANATracker(identifier=workflow_uuid)])
 
-    publisher.publish_workflow_status(workflow_uuid, 2)
-
 
 run_yadage_workflow = create_workflow_engine_command(
     run_yadage_workflow_engine_adapter, engine_type="yadage"

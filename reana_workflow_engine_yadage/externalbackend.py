@@ -10,7 +10,6 @@
 import base64
 import logging
 import os
-import shlex
 
 from packtivity.asyncbackends import ExternalAsyncProxy
 from packtivity.syncbackends import build_job, finalize_inputs, packconfig, publish
