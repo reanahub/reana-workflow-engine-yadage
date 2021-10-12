@@ -9,7 +9,7 @@
 """REANA Workflow Engine Yadage config."""
 
 import os
-from enum import IntEnum
+from enum import IntEnum, Enum
 
 MOUNT_CVMFS = os.getenv("REANA_MOUNT_CVMFS", "false")
 
@@ -26,5 +26,10 @@ class WorkflowRunStatus(IntEnum):
     failed = 3
 
 
-class JobStatus:
-    started = "started"
+class JobStatus(Enum):
+    """Enumeration of **some** possible job statuses.
+
+    Example:
+        JobStatus.started.name == "started"
+    """
+    started = 1
