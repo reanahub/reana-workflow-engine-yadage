@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of REANA.
-# Copyright (C) 2017, 2018 CERN.
+# Copyright (C) 2017-2021 CERN.
 #
 # REANA is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -22,9 +22,8 @@ from reana_commons.workflow_engine import create_workflow_engine_command
 from yadage.steering_api import steering_ctx
 from yadage.utils import setupbackend_fromstring
 
-from .config import LOGGING_MODULE
+from .config import LOGGING_MODULE, WORKFLOW_TRACKING_UPDATE_INTERVAL_SECONDS
 from .tracker import REANATracker
-from .utils import REANAWorkflowStatusPublisher
 
 logging.basicConfig(level=REANA_LOG_LEVEL, format=REANA_LOG_FORMAT)
 log = logging.getLogger(LOGGING_MODULE)
@@ -41,40 +40,38 @@ def run_yadage_workflow_engine_adapter(
     **kwargs,
 ):
     """Run a ``yadage`` workflow."""
-    log.info("getting socket..")
-    # use some shared object between tasks.
     os.environ["workflow_uuid"] = workflow_uuid
     os.environ["workflow_workspace"] = workflow_workspace
     os.umask(REANA_WORKFLOW_UMASK)
 
     cap_backend = setupbackend_fromstring("fromenv")
-    publisher = REANAWorkflowStatusPublisher(instance=publisher)
     workflow_kwargs = dict(workflow_json=workflow_json)
     dataopts = {"initdir": operational_options["initdir"]}
 
     initdata = {}
     for initfile in operational_options["initfiles"]:
-        initdata.update(**yaml.safe_load(open(initfile)))
+        with open(initfile) as stream:
+            initdata.update(**yaml.safe_load(stream))
     initdata.update(workflow_parameters)
 
+    tracker = REANATracker(identifier=workflow_uuid, publisher=publisher)
     with steering_ctx(
         dataarg=workflow_workspace,
         dataopts=dataopts,
         initdata=initdata,
         visualize=True,
-        updateinterval=5,
+        updateinterval=WORKFLOW_TRACKING_UPDATE_INTERVAL_SECONDS,
         loginterval=5,
         backend=cap_backend,
         accept_metadir="accept_metadir" in operational_options,
         **workflow_kwargs,
     ) as ys:
+        log.debug(f"running workflow on context: {locals()}")
 
-        log.info("running workflow on context: {0}".format(locals()))
-        publisher.publish_workflow_status(workflow_uuid, 1)
+        ys.adage_argument(additional_trackers=[tracker])
 
-        ys.adage_argument(additional_trackers=[REANATracker(identifier=workflow_uuid)])
-
-    publisher.publish_workflow_status(workflow_uuid, 2)
+    # Hack to publish finished workflow status AFTER visualization is done.
+    tracker._publish_workflow_final_status()
 
 
 run_yadage_workflow = create_workflow_engine_command(

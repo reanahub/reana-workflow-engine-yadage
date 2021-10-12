@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of REANA.
-# Copyright (C) 2017, 2018 CERN.
+# Copyright (C) 2017-2021 CERN.
 #
 # REANA is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -10,15 +10,12 @@
 import base64
 import logging
 import os
-import shlex
 
 from packtivity.asyncbackends import ExternalAsyncProxy
 from packtivity.syncbackends import build_job, finalize_inputs, packconfig, publish
 from reana_commons.api_client import JobControllerAPIClient as RJC_API_Client
-from reana_commons.utils import build_progress_message
 
 from .config import LOGGING_MODULE, MOUNT_CVMFS
-from .utils import REANAWorkflowStatusPublisher
 
 log = logging.getLogger(LOGGING_MODULE)
 
@@ -45,7 +42,7 @@ class ReanaExternalProxy(ExternalAsyncProxy):
         }
 
 
-class ExternalBackend(object):
+class ExternalBackend:
     """REANA yadage external packtivity backend class."""
 
     def __init__(self):
@@ -55,7 +52,9 @@ class ExternalBackend(object):
 
         self._fail_info = None
 
-    def submit(self, spec, parameters, state, metadata):  # noqa: C901
+    def submit(  # noqa: C901
+        self, spec, parameters, state, metadata  # noqa: C901
+    ) -> ReanaExternalProxy:  # noqa: C901
         """Submit a yadage packtivity to RJC."""
         parameters, state = finalize_inputs(parameters, state)
         job = build_job(spec["process"], parameters, state, self.config)
@@ -141,32 +140,13 @@ class ExternalBackend(object):
         if htcondor_accounting_group:
             job_request_body["htcondor_accounting_group"] = htcondor_accounting_group
 
-        job_id = self.rjc_api_client.submit(**job_request_body)
+        job_submit_response = self.rjc_api_client.submit(**job_request_body)
+        job_id = job_submit_response.get("job_id")
 
-        log.info("submitted job:{0}".format(job_id))
-        message = {
-            "progress": build_progress_message(
-                running={"total": 1, "job_ids": [job_id.get("job_id")]}
-            )
-        }
-        workflow_uuid = os.getenv("workflow_uuid", "default")
-        status_running = 1
-        try:
-            publisher = REANAWorkflowStatusPublisher()
-            publisher.publish_workflow_status(
-                workflow_uuid, status_running, message=message
-            )
-        except Exception as e:
-            log.info(
-                "Status: workflow - {workflow_uuid} "
-                "status - {status} message - {message}".format(
-                    workflow_uuid=workflow_uuid, status=status_running, message=message
-                )
-            )
-            log.info("workflow status publish failed: {0}".format(e))
+        log.info(f"Submitted job with id: {job_id}")
 
         return ReanaExternalProxy(
-            jobproxy=job_id, spec=spec, pardata=parameters, statedata=state
+            jobproxy=job_submit_response, spec=spec, pardata=parameters, statedata=state
         )
 
     def result(self, resultproxy):

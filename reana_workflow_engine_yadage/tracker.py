@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of REANA.
-# Copyright (C) 2017, 2018 CERN.
+# Copyright (C) 2017-2021 CERN.
 #
 # REANA is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
 """REANA-Workflow-Engine-yadage workflow state tracker."""
 
-import ast
-import datetime
 import json
 import logging
+from typing import NoReturn, Dict, Generator
 
 import adage.dagstate as dagstate
 import adage.nodestate as nodestate
@@ -18,66 +17,69 @@ import jq
 import networkx as nx
 from yadage.utils import WithJsonRefEncoder
 
-from .config import LOGGING_MODULE
-from .utils import REANAWorkflowStatusPublisher
+from reana_commons.publisher import WorkflowStatusPublisher
+
+from .config import LOGGING_MODULE, WorkflowRunStatus
 
 log = logging.getLogger(LOGGING_MODULE)
 
 
-def analyze_progress(adageobj):
-    """Analyze the workflow progress."""
-    dag = adageobj.dag
-    nodestates = []
-    for node in nx.topological_sort(dag):
-        nodeobj = dag.getNode(node)
-        is_pure_publishing = nodeobj.task.metadata["wflow_hints"].get(
-            "is_purepub", False
-        )
-        if is_pure_publishing:
-            continue
-        if nodeobj.state == nodestate.RUNNING:
-            nodestates.append(
-                {"state": "running", "job_id": nodeobj.resultproxy.jobproxy["job_id"]}
-            )
-        elif dagstate.node_status(nodeobj):
-            nodestates.append(
-                {"state": "finished", "job_id": nodeobj.resultproxy.jobproxy["job_id"]}
-            )
-        elif dagstate.node_ran_and_failed(nodeobj):
-            nodestates.append(
-                {"state": "failed", "job_id": nodeobj.resultproxy.jobproxy["job_id"]}
-            )
-        elif dagstate.upstream_failure(dag, nodeobj):
-            nodestates.append({"state": "unsubmittable", "job_id": None})
-        else:
-            nodestates.append({"state": "scheduled", "job_id": None})
-    return nodestates
+class REANATracker:
+    """REANA progress tracker for Yadage workflow."""
 
-
-class REANATracker(object):
-    """REANA specific progress tracker."""
-
-    def __init__(self, identifier=None):
-        """Build the tracker object."""
+    def __init__(self, identifier: str, publisher: WorkflowStatusPublisher):
+        """Init tracker."""
         self.workflow_id = identifier
-        self.reana_status_publisher = None
-        log.info(
-            "initializing REANA workflow tracker for id {}".format(self.workflow_id)
-        )
+        self.publisher = publisher
+        self.progress_state = self._build_init_progress_state()
 
-    def initialize(self, adageobj):
-        """Initialize the progress tracker."""
-        self.reana_status_publisher = REANAWorkflowStatusPublisher()
+    def initialize(self, adageobj) -> NoReturn:
+        """Get the progress state when workflow starts.
+
+        Method is called by Yadage package in the beginning of the workflow execution.
+        """
         self.track(adageobj)
 
-    def track(self, adageobj):
-        """Tracks progress."""
-        log.info("sending progress information")
-        serialized = json.dumps(adageobj.json(), cls=WithJsonRefEncoder, sort_keys=True)
-        purejson = json.loads(serialized)
+    def track(self, adageobj) -> NoReturn:
+        """Get the progress state of the workflow and publish it if changed.
 
-        progress = {
-            "engine_specific": None,
+        Method is periodically called by Yadage package during the workflow execution,
+        and also used within this tracker.
+        """
+        current_progress_state = self._get_progress_state(adageobj)
+        log.debug(f"track, current progress state: {current_progress_state}")
+
+        if self._workflow_progressed(current_progress_state):
+            log.debug("track, workflow's progress state changed. Updating...")
+            self._update_progress_state(current_progress_state)
+
+    def finalize(self, adageobj) -> NoReturn:
+        """Update the progress state at the end of the execution.
+
+        Method is called at the end of Yadage workflow execution.
+        """
+        log.info(f"Finalizing the progress tracking for: {adageobj}")
+
+        self.track(adageobj)
+
+        # needed to comment it here due to a hack in cli.py
+        # self._publish_workflow_final_status()
+
+    def _publish_workflow_final_status(self):
+        if self._workflow_failed():
+            log.info("Workflow failed. Publishing...")
+            self.publisher.publish_workflow_status(
+                self.workflow_id, int(WorkflowRunStatus.failed)
+            )
+        else:
+            log.info("Workflow finished. Publishing...")
+            self.publisher.publish_workflow_status(
+                self.workflow_id, int(WorkflowRunStatus.finished)
+            )
+
+    @staticmethod
+    def _build_init_progress_state() -> Dict:
+        return {
             "planned": {"total": 0, "job_ids": []},
             "failed": {"total": 0, "job_ids": []},
             "total": {"total": 0, "job_ids": []},
@@ -85,66 +87,89 @@ class REANATracker(object):
             "finished": {"total": 0, "job_ids": []},
         }
 
-        progress["engine_specific"] = jq.jq(
+    def _workflow_progressed(self, next_progress_state: Dict) -> bool:
+        to_check = ["running", "finished", "failed", "total"]
+
+        for k in to_check:
+            if self.progress_state[k]["total"] != next_progress_state[k]["total"]:
+                return True
+        return False
+
+    def _workflow_failed(self) -> bool:
+        return self.progress_state.get("failed", {}).get("total", -1) != 0
+
+    def _publish_progress(self):
+        message = {"progress": self.progress_state}
+        status_running = int(WorkflowRunStatus.running)
+        try:
+            log.debug("Publishing workflow progress state to MQ...")
+            self.publisher.publish_workflow_status(
+                self.workflow_id, status=status_running, logs=None, message=message,
+            )
+        except Exception as e:
+            log.error(f"Workflow status publish failed: {e}")
+            log.error(
+                f"Status: workflow - {self.workflow_id} "
+                f"status - {status_running} message - {message}"
+            )
+
+    @staticmethod
+    def _dump_workflow_dag(adageobj) -> Dict:
+        serialized = json.dumps(adageobj.json(), cls=WithJsonRefEncoder, sort_keys=True)
+        purejson = json.loads(serialized)
+        return jq.jq(
             "{dag: {edges: .dag.edges, nodes: \
         [.dag.nodes[]|{metadata: {name: .task.metadata.name}, id: .id, \
         jobid: .proxy.proxydetails.jobproxy}]}}"
         ).transform(purejson)
 
-        for node in analyze_progress(adageobj):
-            key = {
-                "running": "running",
-                "finished": "finished",
-                "failed": "failed",
-                "unsubmittable": "planned",
-                "scheduled": "total",
-            }[node["state"]]
-            progress[key]["total"] += 1
+    def _get_progress_state(self, adageobj) -> Dict:
+        progress = self._build_init_progress_state()
 
-            job_id = node["job_id"]
-            if key in ["running", "finished", "failed"]:
-                progress[key]["job_ids"].append(job_id)
+        for node in self._get_nodes_state(adageobj):
+            status = node["state"]
+            progress[status]["total"] += 1
 
-        log_message = "this is a tracking log at {0}".format(
-            datetime.datetime.now().isoformat()
-        )
+            if status in ["running", "finished", "failed"]:
+                job_id = node["job_id"]
+                progress[status]["job_ids"].append(job_id)
 
-        log.info(
-            """sending to REANA
-                    uuid: {}
-                    json:
-                    {}
-                    message:
-                    {}
-                    """.format(
-                self.workflow_id, json.dumps(progress, indent=4), log_message
+        progress["engine_specific"] = self._dump_workflow_dag(adageobj)
+        return progress
+
+    def _update_progress_state(self, progress: Dict) -> NoReturn:
+        self.progress_state = progress
+        self._publish_progress()
+
+    @staticmethod
+    def _get_nodes_state(adageobj) -> Generator[Dict, None, None]:
+        dag = adageobj.dag
+        for node in nx.topological_sort(dag):
+            nodeobj = dag.getNode(node)
+            is_pure_publishing = nodeobj.task.metadata["wflow_hints"].get(
+                "is_purepub", False
             )
-        )
-        message = {"progress": progress}
-        status_running = 1
-        try:
-            self.reana_status_publisher.publish_workflow_status(
-                self.workflow_id,
-                status=status_running,
-                logs=None,
-                message={"progress": progress},
-            )
-        except Exception as e:
-            log.error(
-                "Status: workflow - {workflow_uuid} "
-                "status - {status} message - {message} "
-                "log - {log}".format(
-                    workflow_uuid=self.workflow_id,
-                    status=status_running,
-                    message=message,
-                    log=log_message,
-                )
-            )
-            log.error("workflow status publish failed: {0}".format(e))
+            if is_pure_publishing:
+                continue
 
-    def finalize(self, adageobj):
-        """Finalize the progress tracking."""
-        self.track(adageobj)
-        log.info("Finalizing the progress tracking for: {}".format(adageobj))
-        if self.reana_status_publisher:
-            self.reana_status_publisher.close()
+            if nodeobj.state == nodestate.RUNNING:
+                state = "running"
+                job_id = nodeobj.resultproxy.jobproxy["job_id"]
+            elif dagstate.node_status(nodeobj):
+                state = "finished"
+                job_id = nodeobj.resultproxy.jobproxy["job_id"]
+            elif dagstate.node_ran_and_failed(nodeobj):
+                state = "failed"
+                job_id = nodeobj.resultproxy.jobproxy["job_id"]
+            elif dagstate.upstream_failure(dag, nodeobj):
+                state = "planned"
+                job_id = None
+            else:
+                state = "total"
+                job_id = None
+
+            node_state = {
+                "state": state,
+                "job_id": job_id,
+            }
+            yield node_state
