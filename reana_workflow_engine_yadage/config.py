@@ -24,3 +24,7 @@ class WorkflowRunStatus(IntEnum):
     running = 1
     finished = 2
     failed = 3
+
+
+class JobStatus:
+    started = "started"
