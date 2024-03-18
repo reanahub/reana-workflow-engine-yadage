@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.95.0](https://github.com/reanahub/reana-workflow-engine-yadage/compare/0.9.4...0.95.0) (2024-03-18)
+
+
+### Continuous integration
+
+* **actions:** update GitHub actions due to Node 16 deprecation ([#265](https://github.com/reanahub/reana-workflow-engine-yadage/issues/265)) ([95341c8](https://github.com/reanahub/reana-workflow-engine-yadage/commit/95341c89523528c161061def17c6c174e4beaddf))
+
+
+### Chores
+
+* **master:** release 0.95.0-alpha.1 ([ed93cfa](https://github.com/reanahub/reana-workflow-engine-yadage/commit/ed93cfa1f49c1e16a8f8e294740bbf2c1ab22fb0))
+
 ## [0.9.4](https://github.com/reanahub/reana-workflow-engine-yadage/compare/0.9.3...0.9.4) (2024-03-04)
 
 
