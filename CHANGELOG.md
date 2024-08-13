@@ -1,5 +1,39 @@
 # Changelog
 
+## [0.95.0](https://github.com/reanahub/reana-workflow-engine-yadage/compare/0.9.4...0.95.0) (2024-08-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* **python:** drop support for Python 3.6 and 3.7
+
+### Build
+
+* **docker:** pin setuptools to v70 ([#272](https://github.com/reanahub/reana-workflow-engine-yadage/issues/272)) ([2e30b73](https://github.com/reanahub/reana-workflow-engine-yadage/commit/2e30b73c336ae5e998a3868def0f7cde2c19507c))
+* **docker:** upgrade to Ubuntu 24.04 and Python 3.12 ([#271](https://github.com/reanahub/reana-workflow-engine-yadage/issues/271)) ([54383a5](https://github.com/reanahub/reana-workflow-engine-yadage/commit/54383a5f8e9e2da5f64b0384b690c8d2a5f48e6b))
+* **python:** add minimal `pyproject.toml` ([#272](https://github.com/reanahub/reana-workflow-engine-yadage/issues/272)) ([424a1a3](https://github.com/reanahub/reana-workflow-engine-yadage/commit/424a1a3fc9bb3ad0d081ff49e6eb813a262fb131))
+* **python:** avoid using requirements.in ([#266](https://github.com/reanahub/reana-workflow-engine-yadage/issues/266)) ([b9deced](https://github.com/reanahub/reana-workflow-engine-yadage/commit/b9decedb020d906848cfcb0673d6bf20bc9772c7))
+* **python:** drop support for Python 3.6 and 3.7 ([#267](https://github.com/reanahub/reana-workflow-engine-yadage/issues/267)) ([3320982](https://github.com/reanahub/reana-workflow-engine-yadage/commit/332098278e4b079b9d04df7e2eec39d40ebd1fcc))
+* **python:** remove deprecated `pytest-runner` ([#272](https://github.com/reanahub/reana-workflow-engine-yadage/issues/272)) ([e64a232](https://github.com/reanahub/reana-workflow-engine-yadage/commit/e64a23224a80b94180a1abd2678e5af2e9e4fe0f))
+* **python:** use optional deps instead of `tests_require` ([#272](https://github.com/reanahub/reana-workflow-engine-yadage/issues/272)) ([7488b65](https://github.com/reanahub/reana-workflow-engine-yadage/commit/7488b653d94801844e32c2c51cc7b5871b1b054e))
+
+
+### Bug fixes
+
+* **tracker:** remove invalid `planned` state ([#268](https://github.com/reanahub/reana-workflow-engine-yadage/issues/268)) ([b6c0503](https://github.com/reanahub/reana-workflow-engine-yadage/commit/b6c050302131e63bafbdb164db9b01968785a328)), closes [#255](https://github.com/reanahub/reana-workflow-engine-yadage/issues/255)
+
+
+### Continuous integration
+
+* **actions:** update GitHub actions due to Node 16 deprecation ([#265](https://github.com/reanahub/reana-workflow-engine-yadage/issues/265)) ([95341c8](https://github.com/reanahub/reana-workflow-engine-yadage/commit/95341c89523528c161061def17c6c174e4beaddf))
+* **commitlint:** improve checking of merge commits ([#273](https://github.com/reanahub/reana-workflow-engine-yadage/issues/273)) ([45abc2f](https://github.com/reanahub/reana-workflow-engine-yadage/commit/45abc2f1dc9fdbbbe4b3c9e3b869149614f5a0f7))
+* **pytest:** invoke `pytest` directly instead of `setup.py test` ([#272](https://github.com/reanahub/reana-workflow-engine-yadage/issues/272)) ([2a3db34](https://github.com/reanahub/reana-workflow-engine-yadage/commit/2a3db345b0ad8461c4cdf16b01ddc91bf347ef47))
+
+
+### Chores
+
+* **master:** release 0.95.0-alpha.1 ([ed93cfa](https://github.com/reanahub/reana-workflow-engine-yadage/commit/ed93cfa1f49c1e16a8f8e294740bbf2c1ab22fb0))
+
 ## [0.9.4](https://github.com/reanahub/reana-workflow-engine-yadage/compare/0.9.3...0.9.4) (2024-03-04)
 
 
