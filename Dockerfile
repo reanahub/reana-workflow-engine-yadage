@@ -1,5 +1,5 @@
 # This file is part of REANA.
-# Copyright (C) 2017, 2018, 2019, 2020, 2021, 2022, 2023 CERN.
+# Copyright (C) 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024 CERN.
 #
 # REANA is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -37,7 +37,7 @@ RUN apt-get update -y && \
       python3-pip \
       unzip \
       vim-tiny && \
-    pip install --no-cache-dir --upgrade pip setuptools && \
+    pip install --no-cache-dir --upgrade pip 'setuptools<71' && \
     pip install --no-cache-dir -r /code/requirements.txt && \
     apt-get remove -y \
       autoconf \
