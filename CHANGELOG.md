@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.9.5](https://github.com/reanahub/reana-workflow-engine-yadage/compare/0.9.4...0.9.5) (2024-09-03)
+
+
+### Build
+
+* **docker:** pin setuptools 70 ([#274](https://github.com/reanahub/reana-workflow-engine-yadage/issues/274)) ([bc505d8](https://github.com/reanahub/reana-workflow-engine-yadage/commit/bc505d84a4092610e883e766ad08d2efefe8d908))
+
+
+### Features
+
+* **externalbackend:** allow Compute4PUNCH backend options ([#269](https://github.com/reanahub/reana-workflow-engine-yadage/issues/269)) ([1ce8e6a](https://github.com/reanahub/reana-workflow-engine-yadage/commit/1ce8e6a41f14996c50c53fcd7e84565626756ace))
+
 ## [0.9.4](https://github.com/reanahub/reana-workflow-engine-yadage/compare/0.9.3...0.9.4) (2024-03-04)
 
 
