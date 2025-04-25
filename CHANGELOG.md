@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.9.6](https://github.com/reanahub/reana-workflow-engine-yadage/compare/0.9.5...0.9.6) (2025-04-25)
+
+
+### Build
+
+* **python:** use jq 1.2.2 on aarch64/arm64 ([#282](https://github.com/reanahub/reana-workflow-engine-yadage/issues/282)) ([0f02e74](https://github.com/reanahub/reana-workflow-engine-yadage/commit/0f02e7442e062215a3b02d6ac6dd41c47435f43a)), closes [#281](https://github.com/reanahub/reana-workflow-engine-yadage/issues/281)
+
+
+### Features
+
+* **externalbackend:** pass K8s requests/limits to job controller ([#279](https://github.com/reanahub/reana-workflow-engine-yadage/issues/279)) ([994ffa6](https://github.com/reanahub/reana-workflow-engine-yadage/commit/994ffa639c8b5f0dbe603f56cab30ffe863db3a4))
+
+
+### Continuous integration
+
+* **runners:** upgrade CI runners to Ubuntu 22.04 ([#282](https://github.com/reanahub/reana-workflow-engine-yadage/issues/282)) ([029019e](https://github.com/reanahub/reana-workflow-engine-yadage/commit/029019e01343ac39bdadf1c6df347dd2199bcfa3))
+
 ## [0.9.5](https://github.com/reanahub/reana-workflow-engine-yadage/compare/0.9.4...0.9.5) (2024-11-29)
 
 
