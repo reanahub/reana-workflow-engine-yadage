@@ -80,6 +80,7 @@ class ExternalBackend:
             set_parameter(item, "compute_backend")
             set_parameter(item, "kubernetes_uid")
             set_parameter(item, "kubernetes_memory_limit")
+            set_parameter(item, "kubernetes_queue")
             set_parameter(item, "kubernetes_job_timeout")
             set_parameter(item, "unpacked_img")
             set_parameter(item, "voms_proxy")
