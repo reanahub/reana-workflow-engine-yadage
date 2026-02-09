@@ -35,7 +35,7 @@ RUN apt-get update -y && \
       python3-pip \
       unzip \
       vim-tiny && \
-    pip install --no-cache-dir --upgrade setuptools && \
+    pip install --no-cache-dir --upgrade 'setuptools<81' && \
     pip install --no-cache-dir -r /code/requirements.txt && \
     apt-get remove -y \
       autoconf \
