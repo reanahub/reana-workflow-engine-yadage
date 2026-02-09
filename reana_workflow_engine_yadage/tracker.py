@@ -131,11 +131,9 @@ class REANATracker:
     def _dump_workflow_dag(adageobj) -> Dict:
         serialized = json.dumps(adageobj.json(), cls=WithJsonRefEncoder, sort_keys=True)
         purejson = json.loads(serialized)
-        return jq.jq(
-            "{dag: {edges: .dag.edges, nodes: \
+        return jq.jq("{dag: {edges: .dag.edges, nodes: \
         [.dag.nodes[]|{metadata: {name: .task.metadata.name}, id: .id, \
-        jobid: .proxy.proxydetails.jobproxy}]}}"
-        ).transform(purejson)
+        jobid: .proxy.proxydetails.jobproxy}]}}").transform(purejson)
 
     def _get_progress_state(self, adageobj) -> Dict:
         progress = self._build_init_progress_state()
