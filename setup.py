@@ -30,7 +30,8 @@ extras_require = {
         "sphinx-rtd-theme>=0.1.9",
     ],
     "tests": [
-        "pytest-reana>=0.95.0a2,<0.96.0",
+        "pytest>=7.0.0,<9.0.0",
+        "pytest-cov>=3.0.0,<4.0",
     ],
     "jq": [
         "jq==1.7.0",
@@ -56,7 +57,7 @@ install_requires = [
     "packtivity==0.16.2",
     "yadage==0.20.1",
     "yadage-schemas==0.10.6",
-    "reana-commons[yadage]>=0.95.0a14,<0.96.0",
+    "reana-commons[yadage]>=0.95.0a16,<0.96.0",
     "requests>=2.25.1",
     "rfc3987==1.3.8",  # FIXME remove once yadage-schemas solves yadage deps.
 ]
