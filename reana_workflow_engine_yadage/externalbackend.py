@@ -1,5 +1,5 @@
 # This file is part of REANA.
-# Copyright (C) 2017-2021, 2022, 2025 CERN.
+# Copyright (C) 2017, 2018, 2019, 2020, 2021, 2022, 2024, 2025, 2026 CERN.
 #
 # REANA is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -13,6 +13,7 @@ from typing import Any, Dict, List, Union
 from packtivity.asyncbackends import ExternalAsyncProxy
 from packtivity.syncbackends import build_job, finalize_inputs, packconfig, publish
 from reana_commons.api_client import JobControllerAPIClient as RJC_API_Client
+from reana_commons.errors import REANAJobControllerSubmissionError
 
 from .config import (
     JOB_TERMINAL_STATUSES,
@@ -138,7 +139,14 @@ class ExternalBackend:
             **resources_parameters,
         }
 
-        job_submit_response = self.rjc_api_client.submit(**job_request_body)
+        try:
+            job_submit_response = self.rjc_api_client.submit(**job_request_body)
+        except REANAJobControllerSubmissionError as e:
+            # Suppress the bravado HTTPForbidden context so the workflow-
+            # engine wrapper publishes a clean failure message instead of
+            # dumping the full client traceback. Re-raise the same instance
+            # so the "Job submission error: " prefix is applied only once.
+            raise e from None
         job_id = job_submit_response.get("job_id")
 
         log.info(f"Submitted job with id: {job_id}")

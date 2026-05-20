@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of REANA.
-# Copyright (C) 2019, 2020, 2021 CERN.
+# Copyright (C) 2019, 2020, 2021, 2026 CERN.
 #
 # REANA is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -18,6 +18,7 @@ from reana_commons.config import (
     REANA_LOG_LEVEL,
     REANA_WORKFLOW_UMASK,
 )
+from reana_commons.errors import REANAJobControllerSubmissionError
 from reana_commons.workflow_engine import create_workflow_engine_command
 from yadage.steering_api import steering_ctx
 from yadage.utils import setupbackend_fromstring
@@ -31,6 +32,26 @@ from .tracker import REANATracker
 
 logging.basicConfig(level=REANA_LOG_LEVEL, format=REANA_LOG_FORMAT)
 log = logging.getLogger(LOGGING_MODULE)
+
+
+class _SuppressAdageSubmissionTraceback(logging.Filter):
+    """Drop adage's bare-except traceback for known job-submission failures.
+
+    Adage's main polling loop wraps node submission in a bare ``except:``
+    that logs ``log.exception('some weird exception caught in adage process
+    loop')`` before re-raising. For a ``REANAJobControllerSubmissionError``
+    the wrapper in ``reana_commons.workflow_engine`` already publishes a
+    clean failure message, so adage's duplicate traceback is pure noise.
+    """
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        exc_info = record.exc_info
+        if exc_info and isinstance(exc_info[1], REANAJobControllerSubmissionError):
+            return False
+        return True
+
+
+logging.getLogger("adage").addFilter(_SuppressAdageSubmissionTraceback())
 
 
 def run_yadage_workflow_engine_adapter(
