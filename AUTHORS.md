@@ -4,6 +4,7 @@ The list of contributors in alphabetical order:
 
 - [Adelina Lintuluoto](https://orcid.org/0000-0002-0726-1452)
 - [Agisilaos Kounelis](https://orcid.org/0000-0001-9312-3189)
+- [Alexander Sohn](https://orcid.org/0009-0000-3673-4637)
 - [Alp Tuna](https://orcid.org/0009-0001-1915-3993)
 - [Audrius Mecionis](https://orcid.org/0000-0002-3759-1663)
 - [Cameron McClymont](https://orcid.org/0009-0002-0176-5251)
