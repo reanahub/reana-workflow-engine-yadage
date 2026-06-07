@@ -11,16 +11,16 @@ attrs==26.1.0             # via jsonschema
 bracex==2.6               # via wcmatch
 bravado==10.3.2           # via reana-commons
 bravado-core==6.1.0       # via bravado, reana-commons
-certifi==2026.4.22        # via requests
+certifi==2026.5.20        # via requests
 charset-normalizer==3.4.7  # via requests
 checksumdir==1.1.9        # via packtivity, reana-commons, yadage
-click==8.3.3              # via packtivity, reana-commons, yadage, yadage-schemas
-decorator==5.2.1          # via jsonpath-rw
+click==8.4.1              # via packtivity, reana-commons, yadage, yadage-schemas
+decorator==5.3.1          # via jsonpath-rw
 fs==2.4.16                # via reana-commons
 gherkin-official==39.1.0  # via reana-commons
 glob2==0.7                # via packtivity, yadage
 graphviz==0.21            # via reana-workflow-engine-yadage (setup.py)
-idna==3.14                # via jsonschema, requests
+idna==3.18                # via jsonschema, requests
 importlib-resources==7.1.0  # via swagger-spec-validator
 jq==1.7.0                 # via packtivity, reana-workflow-engine-yadage (setup.py), yadage
 jsonpath-rw==1.4.0        # via packtivity, yadage
@@ -36,7 +36,7 @@ msgpack-python==0.5.6     # via bravado
 networkx==3.6.1           # via adage
 packaging==26.2           # via kombu
 packtivity==0.16.2        # via reana-workflow-engine-yadage (setup.py), yadage
-parse==1.22.0             # via reana-commons
+parse==1.22.1             # via reana-commons
 ply==3.11                 # via jsonpath-rw
 psutil==7.2.2             # via yadage
 pydot==4.0.1              # via reana-workflow-engine-yadage (setup.py)
@@ -47,8 +47,8 @@ pyrsistent==0.20.0        # via jsonschema
 python-dateutil==2.9.0.post0  # via bravado, bravado-core
 pytz==2026.2              # via bravado-core
 pyyaml==6.0.3             # via bravado, bravado-core, packtivity, reana-commons, swagger-spec-validator, yadage, yadage-schemas
-reana-commons[yadage]==0.95.0a20	# via reana-workflow-engine-yadage (setup.py)
-requests[security]==2.34.0  # via bravado, bravado-core, packtivity, reana-workflow-engine-yadage (setup.py), yadage, yadage-schemas
+reana-commons[yadage]==0.95.0a20  # via reana-workflow-engine-yadage (setup.py)
+requests[security]==2.34.2  # via bravado, bravado-core, packtivity, reana-workflow-engine-yadage (setup.py), yadage, yadage-schemas
 rfc3987==1.3.8            # via jsonschema, reana-workflow-engine-yadage (setup.py)
 simplejson==4.1.1         # via bravado, bravado-core
 six==1.17.0               # via bravado, bravado-core, fs, jsonpath-rw, jsonschema, mock, python-dateutil
