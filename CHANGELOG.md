@@ -3,6 +3,53 @@
 
 # Changelog
 
+## [0.9.6](https://github.com/reanahub/reana-workflow-engine-yadage/compare/0.9.5...0.9.6) (2026-06-18)
+
+
+### Build
+
+* **python:** pin setuptools below 81 ([#296](https://github.com/reanahub/reana-workflow-engine-yadage/issues/296)) ([06acfb0](https://github.com/reanahub/reana-workflow-engine-yadage/commit/06acfb0ebd35571c8c239c92c007e54548e068ea))
+* **python:** use jq 1.2.2 on aarch64/arm64 ([#282](https://github.com/reanahub/reana-workflow-engine-yadage/issues/282)) ([6221c47](https://github.com/reanahub/reana-workflow-engine-yadage/commit/6221c47ca769f186d0e82279f38b3792ba955e2f))
+* **python:** use jq 1.2.2 on aarch64/arm64 ([#282](https://github.com/reanahub/reana-workflow-engine-yadage/issues/282)) ([0f02e74](https://github.com/reanahub/reana-workflow-engine-yadage/commit/0f02e7442e062215a3b02d6ac6dd41c47435f43a)), closes [#281](https://github.com/reanahub/reana-workflow-engine-yadage/issues/281)
+
+
+### Features
+
+* **externalbackend:** pass HTCondor CPU/memory/disk/requirements ([#303](https://github.com/reanahub/reana-workflow-engine-yadage/issues/303)) ([4e35a5e](https://github.com/reanahub/reana-workflow-engine-yadage/commit/4e35a5efbfe145c176516d1765b21c9db9f4e44a))
+* **externalbackend:** pass K8s requests/limits to job controller ([#279](https://github.com/reanahub/reana-workflow-engine-yadage/issues/279)) ([6221c47](https://github.com/reanahub/reana-workflow-engine-yadage/commit/6221c47ca769f186d0e82279f38b3792ba955e2f))
+* **externalbackend:** pass K8s requests/limits to job controller ([#279](https://github.com/reanahub/reana-workflow-engine-yadage/issues/279)) ([994ffa6](https://github.com/reanahub/reana-workflow-engine-yadage/commit/994ffa639c8b5f0dbe603f56cab30ffe863db3a4))
+
+
+### Bug fixes
+
+* **config:** use glob for egg-info in flake8 exclude ([#284](https://github.com/reanahub/reana-workflow-engine-yadage/issues/284)) ([51794e4](https://github.com/reanahub/reana-workflow-engine-yadage/commit/51794e4c467e2d3dcd57375ecac96f37d5de57c0))
+* **externalbackend:** handle rejection without noisy traceback ([#301](https://github.com/reanahub/reana-workflow-engine-yadage/issues/301)) ([f283d95](https://github.com/reanahub/reana-workflow-engine-yadage/commit/f283d95a4681dbc692d9ba2ce69becd904a09bcd)), closes [#300](https://github.com/reanahub/reana-workflow-engine-yadage/issues/300)
+* **git:** update .gitignore to exclude modules directory ([#302](https://github.com/reanahub/reana-workflow-engine-yadage/issues/302)) ([7dff82d](https://github.com/reanahub/reana-workflow-engine-yadage/commit/7dff82df0bfad3754ae8113dc681e40c6ce2ed4c))
+
+
+### Code refactoring
+
+* **pytest:** drop pytest-reana and use pytest directly ([#299](https://github.com/reanahub/reana-workflow-engine-yadage/issues/299)) ([5e735c1](https://github.com/reanahub/reana-workflow-engine-yadage/commit/5e735c1139ebec239b3271caeb6ddd60435fe95d))
+
+
+### Code style
+
+* **python:** adapt code base to the new black version ([#296](https://github.com/reanahub/reana-workflow-engine-yadage/issues/296)) ([cdfc12c](https://github.com/reanahub/reana-workflow-engine-yadage/commit/cdfc12c51083e160d5ad493012440296f4f45b8a))
+
+
+### Continuous integration
+
+* **commitlint:** fix local running of commit linter on macOS ([#286](https://github.com/reanahub/reana-workflow-engine-yadage/issues/286)) ([4d2fd09](https://github.com/reanahub/reana-workflow-engine-yadage/commit/4d2fd091f4ffb53d401530eec5a43814e2be413e))
+* **jsonlint:** add JSON linting ([#288](https://github.com/reanahub/reana-workflow-engine-yadage/issues/288)) ([e04c7fa](https://github.com/reanahub/reana-workflow-engine-yadage/commit/e04c7fabcbce987dc10883f92112ad1a7702ec2f))
+* **markdownlint:** add Markdown linting ([#288](https://github.com/reanahub/reana-workflow-engine-yadage/issues/288)) ([2dd9310](https://github.com/reanahub/reana-workflow-engine-yadage/commit/2dd9310028d82d4aae366212f8fa1ab6692a9b17))
+* **markdownlint:** less permissive global configuration ([#297](https://github.com/reanahub/reana-workflow-engine-yadage/issues/297)) ([58687fd](https://github.com/reanahub/reana-workflow-engine-yadage/commit/58687fd6eaf3562aabf35c4e8acba4ac749be4fe))
+* **prettier:** add Prettier code formatting checks ([#288](https://github.com/reanahub/reana-workflow-engine-yadage/issues/288)) ([49e092d](https://github.com/reanahub/reana-workflow-engine-yadage/commit/49e092d5cdb9b7a1c5127cd67e8e038dffbbde69))
+* **run-tests:** add usage help and refactor options ([#297](https://github.com/reanahub/reana-workflow-engine-yadage/issues/297)) ([3161193](https://github.com/reanahub/reana-workflow-engine-yadage/commit/316119311767d25b675d990661839113fa3e78c4))
+* **runners:** upgrade CI runners to Ubuntu 22.04 ([#282](https://github.com/reanahub/reana-workflow-engine-yadage/issues/282)) ([6221c47](https://github.com/reanahub/reana-workflow-engine-yadage/commit/6221c47ca769f186d0e82279f38b3792ba955e2f))
+* **runners:** upgrade CI runners to Ubuntu 22.04 ([#282](https://github.com/reanahub/reana-workflow-engine-yadage/issues/282)) ([029019e](https://github.com/reanahub/reana-workflow-engine-yadage/commit/029019e01343ac39bdadf1c6df347dd2199bcfa3))
+* **shfmt:** add shell script formatting checks ([#288](https://github.com/reanahub/reana-workflow-engine-yadage/issues/288)) ([93fee91](https://github.com/reanahub/reana-workflow-engine-yadage/commit/93fee912cdc860c28ff69fe2b46deaef5441791f))
+* **yamllint:** add YAML linting ([#288](https://github.com/reanahub/reana-workflow-engine-yadage/issues/288)) ([c9a5399](https://github.com/reanahub/reana-workflow-engine-yadage/commit/c9a5399327d6f64aeb27c67efaa42600fa563176))
+
 ## [0.9.5](https://github.com/reanahub/reana-workflow-engine-yadage/compare/0.9.4...0.9.5) (2024-11-29)
 
 ### Build
