@@ -9,6 +9,7 @@
 
 from __future__ import absolute_import, print_function
 
+import json
 import logging
 import os
 import yaml
@@ -60,6 +61,7 @@ def run_yadage_workflow_engine_adapter(
     workflow_uuid=None,
     workflow_workspace=None,
     workflow_json=None,
+    workflow_resources=None,
     workflow_parameters=None,
     operational_options={},
     **kwargs,
@@ -67,6 +69,7 @@ def run_yadage_workflow_engine_adapter(
     """Run a ``yadage`` workflow."""
     os.environ["workflow_uuid"] = workflow_uuid
     os.environ["workflow_workspace"] = workflow_workspace
+    os.environ["REANA_WORKFLOW_RESOURCES"] = json.dumps(workflow_resources or {})
     os.umask(REANA_WORKFLOW_UMASK)
 
     tracker = REANATracker(identifier=workflow_uuid, publisher=publisher)
