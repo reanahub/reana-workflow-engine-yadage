@@ -17,7 +17,7 @@ from reana_commons.errors import REANAJobControllerSubmissionError
 
 class TestExternalBackend:
     @pytest.mark.parametrize(
-        "input_parameters,final_parameters",
+        "input_parameters,workflow_resources,final_parameters",
         [
             (
                 [
@@ -29,6 +29,7 @@ class TestExternalBackend:
                     {"kubernetes_memory_request": None},
                     {"kubernetes_memory_limit": None},
                 ],
+                {},
                 {
                     "compute_backend": "kubernetes",
                     "kubernetes_job_timeout": 20,
@@ -37,20 +38,48 @@ class TestExternalBackend:
             ),
             (
                 [{"kubernetes_job_timeout": 10}, {"kubernetes_job_timeout": 30}],
+                {},
                 {"kubernetes_job_timeout": 30, "kerberos": False},
             ),
             (
                 [{"kerberos": True}],
+                {},
                 {"kerberos": True},
+            ),
+            (
+                [{"secret_names": []}],
+                {},
+                {"kerberos": False, "secret_names": []},
+            ),
+            (
+                [{"secret_names": ["alpha", "beta"]}],
+                {},
+                {"kerberos": False, "secret_names": ["alpha", "beta"]},
+            ),
+            (
+                [],
+                {"kerberos": False, "secret_names": ["global"]},
+                {"kerberos": False, "secret_names": ["global"]},
+            ),
+            (
+                [{"secret_names": []}],
+                {"secret_names": ["global"]},
+                {"kerberos": False, "secret_names": []},
             ),
         ],
     )
     def test_get_resources(
-        self, input_parameters: List[Union[Dict, Any]], final_parameters: Dict[str, Any]
+        self,
+        input_parameters: List[Union[Dict, Any]],
+        workflow_resources: Dict[str, Any],
+        final_parameters: Dict[str, Any],
     ):
         from reana_workflow_engine_yadage.externalbackend import ExternalBackend
 
-        assert ExternalBackend._get_resources(input_parameters) == final_parameters
+        assert (
+            ExternalBackend._get_resources(input_parameters, workflow_resources)
+            == final_parameters
+        )
 
     def test_submit_drops_bravado_chain_on_rejection(self):
         """Job-controller rejection re-raises without the bravado chain.
