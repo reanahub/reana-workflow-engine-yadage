@@ -92,7 +92,10 @@ class ExternalBackend:
             set_parameter(item, "slurm_partition")
             set_parameter(item, "slurm_time")
             set_parameter(item, "c4p_cpu_cores")
+            set_parameter(item, "c4p_request_gpus")
             set_parameter(item, "c4p_memory_limit")
+            set_parameter(item, "c4p_notification")
+            set_parameter(item, "c4p_email_address")
             set_parameter(item, "c4p_additional_requirements")
 
         if "kerberos" not in parameters:
