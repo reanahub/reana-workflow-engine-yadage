@@ -56,7 +56,7 @@ install_requires = [
     "adage==0.11.0",
     "packtivity==0.16.2",
     "yadage==0.20.1",
-    "yadage-schemas==0.10.6",
+    "yadage-schemas @ https://github.com/tiborsimko/yadage-schemas/archive/fb4fd499fd2bcb5e63311c9c81b8106f3bf4fa4f.tar.gz",
     "reana-commons[yadage]>=0.95.0a20,<0.96.0",
     "requests>=2.25.1",
     "rfc3987==1.3.8",  # FIXME remove once yadage-schemas solves yadage deps.
