@@ -123,7 +123,8 @@ class ExternalBackend:
 
         image = spec["environment"]["image"]
         imagetag = spec["environment"].get("imagetag", "")
-        if imagetag:
+        # Apptainer image files are referenced by path and carry no tag
+        if imagetag and not image.endswith(".sif"):
             image = f"{image}:{imagetag}"
 
         resources = spec["environment"].get("resources", [])

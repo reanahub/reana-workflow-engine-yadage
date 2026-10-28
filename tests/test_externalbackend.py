@@ -102,6 +102,60 @@ class TestExternalBackend:
         assert excinfo.value.__suppress_context__ is True
 
 
+class TestSubmitImage:
+    """The image reference sent to the job controller."""
+
+    @pytest.mark.parametrize(
+        "environment,expected_image",
+        [
+            ({"image": "busybox", "imagetag": "1.36"}, "busybox:1.36"),
+            ({"image": "busybox"}, "busybox"),
+            (
+                {
+                    "image": "/cvmfs/unpacked.cern.ch/registry.hub.docker.com/library/python",
+                    "imagetag": "3.11",
+                },
+                "/cvmfs/unpacked.cern.ch/registry.hub.docker.com/library/python:3.11",
+            ),
+            (
+                {"image": "images/my_tool.sif", "imagetag": "latest"},
+                "images/my_tool.sif",
+            ),
+            ({"image": "my_tool.sif"}, "my_tool.sif"),
+        ],
+    )
+    def test_submit_image_reference(self, environment, expected_image):
+        """SIF image files are submitted by path, without an image tag."""
+        from reana_workflow_engine_yadage.externalbackend import ExternalBackend
+
+        backend = ExternalBackend.__new__(ExternalBackend)
+        backend.rjc_api_client = mock.Mock()
+        backend.rjc_api_client.submit.return_value = {"job_id": "job-id"}
+        backend.config = mock.Mock()
+        backend.jobs_statuses = {}
+        backend._fail_info = ""
+
+        spec = {
+            "process": {"process_type": "string-interpolated-cmd", "cmd": "echo hi"},
+            "environment": dict(environment, resources=[]),
+            "publisher": {},
+        }
+        parameters = mock.MagicMock()
+        state = mock.MagicMock()
+
+        with mock.patch(
+            "reana_workflow_engine_yadage.externalbackend.finalize_inputs",
+            return_value=(parameters, state),
+        ), mock.patch(
+            "reana_workflow_engine_yadage.externalbackend.build_job",
+            return_value={"command": "echo hi"},
+        ):
+            backend.submit(spec, parameters, state, {"name": "step"})
+
+        submit_kwargs = backend.rjc_api_client.submit.call_args[1]
+        assert submit_kwargs["image"] == expected_image
+
+
 class TestAdageLogSuppression:
     """The cli module installs a filter that drops adage's duplicate traceback."""
 
