@@ -14,6 +14,9 @@ from packtivity.asyncbackends import ExternalAsyncProxy
 from packtivity.syncbackends import build_job, finalize_inputs, packconfig, publish
 from reana_commons.api_client import JobControllerAPIClient as RJC_API_Client
 from reana_commons.errors import REANAJobControllerSubmissionError
+from reana_commons.k8s.secrets import resolve_secret_names
+from reana_commons.workflow_engine import get_workflow_resources
+
 
 from .config import (
     JOB_TERMINAL_STATUSES,
@@ -58,12 +61,16 @@ class ExternalBackend:
         """Initialize the REANA packtivity backend."""
         self.config = packconfig()
         self.rjc_api_client = RJC_API_Client("reana-job-controller")
+        self.workflow_resources = get_workflow_resources()
 
         self.jobs_statuses = {}
         self._fail_info = ""
 
     @staticmethod
-    def _get_resources(resources: List[Union[Dict, Any]]) -> Dict[str, Any]:
+    def _get_resources(
+        resources: List[Union[Dict, Any]],
+        workflow_resources: Dict[str, Any] = None,
+    ) -> Dict[str, Any]:
         parameters = {}
 
         def set_parameter(resource: Dict[str, Any], key: str) -> None:
@@ -88,6 +95,7 @@ class ExternalBackend:
             set_parameter(item, "unpacked_img")
             set_parameter(item, "voms_proxy")
             set_parameter(item, "rucio")
+            set_parameter(item, "secret_names")
             set_parameter(item, "htcondor_max_runtime")
             set_parameter(item, "htcondor_accounting_group")
             set_parameter(item, "htcondor_request_cpus")
@@ -102,6 +110,11 @@ class ExternalBackend:
 
         if "kerberos" not in parameters:
             parameters["kerberos"] = WORKFLOW_KERBEROS
+        parameters["secret_names"] = resolve_secret_names(
+            parameters.get("secret_names"), workflow_resources
+        )
+        if parameters["secret_names"] is None:
+            parameters.pop("secret_names")
 
         return parameters
 
@@ -127,7 +140,9 @@ class ExternalBackend:
             image = f"{image}:{imagetag}"
 
         resources = spec["environment"].get("resources", [])
-        resources_parameters = self._get_resources(resources)
+        resources_parameters = self._get_resources(
+            resources, getattr(self, "workflow_resources", {})
+        )
 
         log.debug(f"would run job {job}")
 
