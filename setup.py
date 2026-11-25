@@ -51,7 +51,7 @@ install_requires = [
     "graphviz>=0.12",  # FIXME needed only if yadage visuale=True.
     "pydot>=1.0.29",  # FIXME needed only if yadage visuale=True.
     "pydotplus>=2.0.2",  # FIXME needed only if yadage visuale=True.
-    "reana-commons[yadage]>=0.95.0a26,<0.96.0",
+    "reana-commons[yadage]>=0.95.0a29,<0.96.0",
     "requests>=2.25.1",
     "rfc3987==1.3.8",  # FIXME remove once yadage-schemas solves yadage deps.
 ]
